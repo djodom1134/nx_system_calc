@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nx-calculator-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://nx_user:nx_password@db:5432/nx_calculator
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost
+    volumes:
+      - ./backend:/app
+      - ./config:/app/config
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - nx-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nx-calculator-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - nx-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: nx-calculator-db
+    environment:
+      - POSTGRES_USER=nx_user
+      - POSTGRES_PASSWORD=nx_password
+      - POSTGRES_DB=nx_calculator
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - nx-network
+
+volumes:
+  postgres_data:
+
+networks:
+  nx-network:
+    driver: bridge
+

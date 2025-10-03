@@ -1,0 +1,99 @@
+{
+  "raid_types": [
+    {
+      "id": "none",
+      "name": "No RAID",
+      "description": "No redundancy - all storage is usable",
+      "usable_percentage": 100,
+      "min_drives": 1,
+      "fault_tolerance": 0,
+      "read_performance": "1x",
+      "write_performance": "1x",
+      "recommended": false,
+      "notes": "Not recommended for production - no fault tolerance"
+    },
+    {
+      "id": "raid0",
+      "name": "RAID 0 (Striping)",
+      "description": "Maximum performance, no redundancy",
+      "usable_percentage": 100,
+      "min_drives": 2,
+      "fault_tolerance": 0,
+      "read_performance": "Nx",
+      "write_performance": "Nx",
+      "recommended": false,
+      "notes": "High performance but no fault tolerance - data loss if any drive fails"
+    },
+    {
+      "id": "raid1",
+      "name": "RAID 1 (Mirroring)",
+      "description": "Full redundancy, 50% usable capacity",
+      "usable_percentage": 50,
+      "min_drives": 2,
+      "fault_tolerance": 1,
+      "read_performance": "2x",
+      "write_performance": "1x",
+      "recommended": true,
+      "notes": "Good for small deployments requiring redundancy"
+    },
+    {
+      "id": "raid5",
+      "name": "RAID 5 (Striping with Parity)",
+      "description": "Good balance of capacity and redundancy",
+      "usable_percentage": 75,
+      "min_drives": 3,
+      "fault_tolerance": 1,
+      "read_performance": "Nx",
+      "write_performance": "0.7x",
+      "recommended": true,
+      "notes": "Popular choice - can survive one drive failure. Calculation: (N-1)/N * 100"
+    },
+    {
+      "id": "raid6",
+      "name": "RAID 6 (Dual Parity)",
+      "description": "Higher redundancy, can survive 2 drive failures",
+      "usable_percentage": 66.67,
+      "min_drives": 4,
+      "fault_tolerance": 2,
+      "read_performance": "Nx",
+      "write_performance": "0.6x",
+      "recommended": true,
+      "notes": "Recommended for large deployments. Calculation: (N-2)/N * 100"
+    },
+    {
+      "id": "raid10",
+      "name": "RAID 10 (Mirrored Striping)",
+      "description": "Best performance with redundancy",
+      "usable_percentage": 50,
+      "min_drives": 4,
+      "fault_tolerance": 1,
+      "read_performance": "2x",
+      "write_performance": "2x",
+      "recommended": true,
+      "notes": "Excellent performance, recommended for high-throughput scenarios"
+    },
+    {
+      "id": "nx_failover",
+      "name": "Nx Failover",
+      "description": "Network Optix failover configuration",
+      "usable_percentage": 50,
+      "min_drives": 1,
+      "fault_tolerance": 1,
+      "read_performance": "1x",
+      "write_performance": "1x",
+      "recommended": true,
+      "notes": "Nx-specific failover - storage replicated to backup server"
+    }
+  ],
+  "filesystem_overhead": {
+    "percentage": 5,
+    "description": "Additional 5% overhead for filesystem metadata and formatting"
+  },
+  "calculation_notes": [
+    "Usable storage = Raw storage × (RAID usable percentage / 100) × (1 - filesystem overhead)",
+    "For RAID 5 with N drives: usable = (N-1)/N of raw capacity",
+    "For RAID 6 with N drives: usable = (N-2)/N of raw capacity",
+    "Always account for filesystem overhead (typically 5%)"
+  ]
+}
+

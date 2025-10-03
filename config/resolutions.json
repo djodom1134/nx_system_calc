@@ -1,0 +1,131 @@
+{
+  "resolutions": [
+    {
+      "id": "16mp",
+      "name": "16MP",
+      "label": "16MP (4616×3464)",
+      "width": 4616,
+      "height": 3464,
+      "area": 16000000,
+      "category": "ultra_high"
+    },
+    {
+      "id": "12mp",
+      "name": "12MP",
+      "label": "12MP (4000×3000)",
+      "width": 4000,
+      "height": 3000,
+      "area": 12000000,
+      "category": "ultra_high"
+    },
+    {
+      "id": "10mp",
+      "name": "10MP",
+      "label": "10MP (3648×2736)",
+      "width": 3648,
+      "height": 2736,
+      "area": 10000000,
+      "category": "ultra_high"
+    },
+    {
+      "id": "8mp_4k",
+      "name": "8MP (4K)",
+      "label": "8MP/4K (3840×2160)",
+      "width": 3840,
+      "height": 2160,
+      "area": 8294400,
+      "category": "high"
+    },
+    {
+      "id": "8mp",
+      "name": "8MP",
+      "label": "8MP (3264×2448)",
+      "width": 3264,
+      "height": 2448,
+      "area": 8000000,
+      "category": "high"
+    },
+    {
+      "id": "5mp",
+      "name": "5MP",
+      "label": "5MP (2592×1944)",
+      "width": 2592,
+      "height": 1944,
+      "area": 5000000,
+      "category": "high"
+    },
+    {
+      "id": "4mp",
+      "name": "4MP",
+      "label": "4MP (2688×1520)",
+      "width": 2688,
+      "height": 1520,
+      "area": 4000000,
+      "category": "medium"
+    },
+    {
+      "id": "3mp",
+      "name": "3MP",
+      "label": "3MP (2048×1536)",
+      "width": 2048,
+      "height": 1536,
+      "area": 3145728,
+      "category": "medium"
+    },
+    {
+      "id": "2mp_1080p",
+      "name": "2MP (1080p)",
+      "label": "2MP/1080p (1920×1080)",
+      "width": 1920,
+      "height": 1080,
+      "area": 2073600,
+      "category": "medium"
+    },
+    {
+      "id": "2mp",
+      "name": "2MP",
+      "label": "2MP (1600×1200)",
+      "width": 1600,
+      "height": 1200,
+      "area": 1920000,
+      "category": "medium"
+    },
+    {
+      "id": "1_3mp_720p",
+      "name": "1.3MP (720p)",
+      "label": "1.3MP/720p (1280×720)",
+      "width": 1280,
+      "height": 720,
+      "area": 921600,
+      "category": "standard"
+    },
+    {
+      "id": "1mp",
+      "name": "1MP",
+      "label": "1MP (1024×768)",
+      "width": 1024,
+      "height": 768,
+      "area": 786432,
+      "category": "standard"
+    },
+    {
+      "id": "svga",
+      "name": "SVGA",
+      "label": "SVGA (800×600)",
+      "width": 800,
+      "height": 600,
+      "area": 480000,
+      "category": "low"
+    },
+    {
+      "id": "vga",
+      "name": "VGA",
+      "label": "VGA (640×480)",
+      "width": 640,
+      "height": 480,
+      "area": 307200,
+      "category": "low"
+    }
+  ]
+}
+

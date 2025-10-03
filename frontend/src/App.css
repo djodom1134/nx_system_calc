@@ -1,0 +1,148 @@
+/* Additional custom styles with accessibility and responsive design */
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  @apply absolute left-0 top-0 text-white px-4 py-2 rounded-br-lg;
+  background-color: #407EC9;
+  @apply transform -translate-y-full focus:translate-y-0;
+  @apply transition-transform duration-200 z-50;
+  @apply focus:outline-none focus:ring-2;
+  box-shadow: 0 0 0 2px rgba(64, 126, 201, 0.3);
+}
+
+.skip-link-visible {
+  @apply translate-y-0;
+}
+
+/* Card component - responsive padding */
+.card {
+  @apply bg-white rounded-lg shadow-md;
+  @apply p-4 sm:p-6 lg:p-8;
+}
+
+/* Button components with focus states */
+.btn-primary {
+  @apply text-white px-4 sm:px-6 py-2 rounded-lg;
+  background-color: #407EC9;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  --tw-ring-color: #407EC9;
+  @apply transition-colors duration-200;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-primary:hover {
+  background-color: #3668a8;
+}
+
+.btn-primary:active {
+  background-color: #2d5687;
+}
+
+.btn-secondary {
+  @apply bg-gray-300 text-gray-900 px-4 sm:px-6 py-2 rounded-lg;
+  @apply hover:bg-gray-400 active:bg-gray-500;
+  @apply focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  @apply transition-colors duration-200;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Input field with enhanced focus states */
+.input-field {
+  @apply w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg;
+  @apply focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  @apply transition-all duration-200;
+  @apply disabled:bg-gray-100 disabled:cursor-not-allowed;
+  @apply text-base; /* Prevent zoom on iOS */
+}
+
+.input-field:invalid {
+  @apply border-red-300 focus:ring-red-500;
+}
+
+/* Label with proper contrast */
+.label {
+  @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  @apply outline-none ring-2 ring-offset-2;
+  --tw-ring-color: #407EC9;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn-primary {
+    @apply border-2 border-white;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-gray-800;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Screen reader only content */
+.sr-only {
+  @apply absolute w-px h-px p-0 -m-px overflow-hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:focus {
+  @apply static w-auto h-auto p-1 m-0 overflow-visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Loading spinner */
+.spinner {
+  @apply inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error and success states */
+.error-message {
+  @apply text-red-600 text-sm mt-1;
+  @apply flex items-center gap-1;
+}
+
+.success-message {
+  @apply text-green-600 text-sm mt-1;
+  @apply flex items-center gap-1;
+}
+
+/* Responsive grid */
+.responsive-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+}
+
+/* Touch target size (minimum 44x44px for accessibility) */
+button, a, input[type="checkbox"], input[type="radio"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+select,
+textarea {
+  min-height: 44px;
+}
+

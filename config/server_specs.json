@@ -1,0 +1,333 @@
+{
+  "cpu_variants": {
+    "arm": {
+      "name": "ARM",
+      "max_cameras": 12,
+      "nic_bitrate_mbps": 64,
+      "ram_os_mb": 128,
+      "description": "Low-power ARM processor for small deployments"
+    },
+    "atom": {
+      "name": "Intel Atom",
+      "max_cameras": 32,
+      "nic_bitrate_mbps": 600,
+      "ram_os_mb": 1024,
+      "description": "Entry-level x86 processor"
+    },
+    "core_i3": {
+      "name": "Intel Core i3",
+      "max_cameras": 256,
+      "nic_bitrate_mbps": 600,
+      "ram_os_mb": 1024,
+      "description": "Standard processor for medium deployments"
+    },
+    "core_i5": {
+      "name": "Intel Core i5",
+      "max_cameras": 256,
+      "nic_bitrate_mbps": 600,
+      "ram_os_mb": 1024,
+      "description": "Performance processor for large deployments"
+    }
+  },
+  "server_constraints": {
+    "max_devices_per_server": 256,
+    "max_servers_per_site": 10,
+    "max_devices_per_site": 2560,
+    "bandwidth_headroom_percentage": 20,
+    "cpu_headroom_percentage": 20,
+    "storage_headroom_percentage": 10,
+    "camera_ram_mb": 40,
+    "client_ram_mb": 3072,
+    "storage_throughput_mbps": 204
+  },
+  "server_tiers": [
+    {
+      "id": "nx1",
+      "name": "NX1 (ARM)",
+      "cpu_variant": "arm",
+      "max_devices": 12,
+      "max_bitrate_mbps": 64,
+      "cpu": {
+        "model": "ARM Cortex",
+        "variant": "arm",
+        "cores": 4,
+        "threads": 4,
+        "base_clock_ghz": 1.5
+      },
+      "ram_gb": 1,
+      "storage": {
+        "type": "HDD",
+        "sata_ports": 1,
+        "max_hdd_count": 1,
+        "recommended_raid": "none",
+        "max_capacity_tb": 2,
+        "write_speed_mbps": 100
+      },
+      "network": {
+        "nics": 1,
+        "speed_mbps": 64
+      },
+      "use_case": "Very small deployments, low-power applications"
+    },
+    {
+      "id": "nx2",
+      "name": "NX2 (Core i5)",
+      "cpu_variant": "core_i5",
+      "max_devices": 256,
+      "max_bitrate_mbps": 600,
+      "cpu": {
+        "model": "Intel Core i5",
+        "variant": "core_i5",
+        "cores": 6,
+        "threads": 12,
+        "base_clock_ghz": 2.5
+      },
+      "ram_gb": 8,
+      "storage": {
+        "type": "HDD",
+        "sata_ports": 4,
+        "max_hdd_count": 4,
+        "recommended_raid": "raid5",
+        "max_capacity_tb": 16,
+        "write_speed_mbps": 300
+      },
+      "network": {
+        "nics": 1,
+        "speed_mbps": 600
+      },
+      "use_case": "Standard deployments, mixed resolution cameras"
+    },
+    {
+      "id": "nx3",
+      "name": "NX3 (Core i3)",
+      "cpu_variant": "core_i3",
+      "max_devices": 256,
+      "max_bitrate_mbps": 600,
+      "cpu": {
+        "model": "Intel Core i3",
+        "variant": "core_i3",
+        "cores": 4,
+        "threads": 8,
+        "base_clock_ghz": 3.0
+      },
+      "ram_gb": 8,
+      "storage": {
+        "type": "HDD",
+        "sata_ports": 12,
+        "max_hdd_count": 12,
+        "recommended_raid": "raid6",
+        "max_capacity_tb": 48,
+        "write_speed_mbps": 500
+      },
+      "network": {
+        "nics": 1,
+        "speed_mbps": 600
+      },
+      "use_case": "Large deployments with high storage requirements"
+    },
+    {
+      "id": "entry",
+      "name": "Entry Level",
+      "cpu_variant": "atom",
+      "max_devices": 64,
+      "max_bitrate_mbps": 200,
+      "cpu": {
+        "model": "Intel Core i5-12400 or AMD Ryzen 5 5600",
+        "variant": "core_i5",
+        "cores": 6,
+        "threads": 12,
+        "base_clock_ghz": 2.5
+      },
+      "ram_gb": 16,
+      "storage": {
+        "type": "HDD",
+        "sata_ports": 4,
+        "max_hdd_count": 4,
+        "recommended_raid": "raid5",
+        "min_capacity_tb": 4,
+        "write_speed_mbps": 150
+      },
+      "network": {
+        "nics": 1,
+        "speed_gbps": 1
+      },
+      "use_case": "Small deployments, low-resolution cameras"
+    },
+    {
+      "id": "standard",
+      "name": "Standard",
+      "cpu_variant": "core_i5",
+      "max_devices": 128,
+      "max_bitrate_mbps": 400,
+      "cpu": {
+        "model": "Intel Core i7-13700 or AMD Ryzen 7 5800X",
+        "variant": "core_i5",
+        "cores": 8,
+        "threads": 16,
+        "base_clock_ghz": 3.0
+      },
+      "ram_gb": 32,
+      "storage": {
+        "type": "HDD",
+        "sata_ports": 8,
+        "max_hdd_count": 8,
+        "recommended_raid": "raid6",
+        "min_capacity_tb": 12,
+        "write_speed_mbps": 300
+      },
+      "network": {
+        "nics": 2,
+        "speed_gbps": 1
+      },
+      "use_case": "Medium deployments, mixed resolution cameras"
+    },
+    {
+      "id": "professional",
+      "name": "Professional",
+      "cpu_variant": "core_i5",
+      "max_devices": 200,
+      "max_bitrate_mbps": 800,
+      "cpu": {
+        "model": "Intel Xeon E-2388G or AMD EPYC 7313P",
+        "variant": "core_i5",
+        "cores": 16,
+        "threads": 32,
+        "base_clock_ghz": 3.2
+      },
+      "ram_gb": 64,
+      "storage": {
+        "type": "Hybrid (SSD cache + HDD)",
+        "sata_ports": 12,
+        "max_hdd_count": 12,
+        "recommended_raid": "raid6",
+        "min_capacity_tb": 24,
+        "write_speed_mbps": 500
+      },
+      "network": {
+        "nics": 2,
+        "speed_gbps": 10
+      },
+      "use_case": "Large deployments, high-resolution cameras"
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "cpu_variant": "core_i5",
+      "max_devices": 256,
+      "max_bitrate_mbps": 1200,
+      "cpu": {
+        "model": "Intel Xeon Gold 6338 or AMD EPYC 7543",
+        "variant": "core_i5",
+        "cores": 32,
+        "threads": 64,
+        "base_clock_ghz": 2.0
+      },
+      "ram_gb": 128,
+      "storage": {
+        "type": "All-Flash or NVMe",
+        "sata_ports": 16,
+        "max_hdd_count": 16,
+        "recommended_raid": "raid10",
+        "min_capacity_tb": 48,
+        "write_speed_mbps": 1000
+      },
+      "network": {
+        "nics": 4,
+        "speed_gbps": 10
+      },
+      "use_case": "Maximum capacity, 4K/8MP cameras, high retention"
+    }
+  ],
+  "device_reduction_rules": {
+    "description": "Reduce max devices per server for high-bandwidth cameras",
+    "rules": [
+      {
+        "condition": "resolution >= 8MP OR bitrate > 8000 kbps",
+        "max_devices": 128,
+        "reason": "High-bandwidth devices require more processing and storage I/O"
+      },
+      {
+        "condition": "resolution >= 12MP OR bitrate > 12000 kbps",
+        "max_devices": 96,
+        "reason": "Ultra-high resolution requires significant resources"
+      },
+      {
+        "condition": "fps > 30",
+        "multiplier": 0.8,
+        "reason": "High frame rates increase processing load"
+      }
+    ]
+  },
+  "failover_configurations": {
+    "none": {
+      "multiplier": 1.0,
+      "description": "No failover - single server failure affects all cameras"
+    },
+    "n_plus_1": {
+      "multiplier": 2.0,
+      "description": "N+1 redundancy - one backup server for failover",
+      "min_servers": 2
+    },
+    "n_plus_2": {
+      "multiplier": 3.0,
+      "description": "N+2 redundancy - two backup servers for high availability",
+      "min_servers": 3
+    }
+  },
+  "network_interface_types": [
+    {
+      "id": "1gbe",
+      "name": "1 Gigabit Ethernet",
+      "speed_mbps": 1000,
+      "effective_throughput_mbps": 800,
+      "notes": "20% overhead for protocol and headroom"
+    },
+    {
+      "id": "10gbe",
+      "name": "10 Gigabit Ethernet",
+      "speed_mbps": 10000,
+      "effective_throughput_mbps": 8000,
+      "notes": "20% overhead for protocol and headroom"
+    },
+    {
+      "id": "25gbe",
+      "name": "25 Gigabit Ethernet",
+      "speed_mbps": 25000,
+      "effective_throughput_mbps": 20000,
+      "notes": "20% overhead for protocol and headroom"
+    }
+  ],
+  "tcp_connection_limits": {
+    "max_connections_per_server": 2000,
+    "connections_per_client": 5,
+    "connections_per_camera_view": 1,
+    "calculation": "max_clients = (2000 - (cameras * 1)) / (5 + avg_cameras_per_client)"
+  },
+  "recording_modes": [
+    {
+      "id": "continuous",
+      "name": "Continuous Recording",
+      "recording_factor": 1.0,
+      "description": "24/7 recording"
+    },
+    {
+      "id": "motion",
+      "name": "Motion Detection",
+      "recording_factor": 0.3,
+      "description": "Records only when motion detected (typical 30% duty cycle)"
+    },
+    {
+      "id": "object",
+      "name": "Object Detection",
+      "recording_factor": 0.2,
+      "description": "Records only when specific objects detected (typical 20% duty cycle)"
+    },
+    {
+      "id": "scheduled",
+      "name": "Scheduled Recording",
+      "recording_factor": 0.5,
+      "description": "Records during specified hours (default 50%, customizable)"
+    }
+  ]
+}
+

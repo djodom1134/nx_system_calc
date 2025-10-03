@@ -1,0 +1,554 @@
+Nx Calculator
+Purpose
+Goals
+Audience
+Functional Requirements
+Input Parameters
+Customization
+Project Details
+Number of Cameras
+Resolution per Camera
+Frame Rate (FPS)
+Compression Codec
+Bitrate per Stream (Predefined or Calculated)
+Recording Schedule
+Days of Retention
+Audio Recording
+Redundancy / RAID Level
+Server Redundancy / Failover Plan
+Hours per Day of Recording (Optional)
+Camera Group Profiles (Advanced)
+Maximum Concurrent Viewing Streams (Optional)
+Custom Text Fields
+Output Values
+Total Storage Required
+Total Storage per Server
+Number of Recording Servers
+Recommended Server Specs
+Total Incoming Bitrate
+Estimated Per-Server Load
+Estimated Disk IOPS Requirements
+Number of Concurrent Desktop Clients Supported
+Failover Server Recommendations (If Applicable)
+Network Bandwidth Requirements
+Summary Report
+More detailing required:
+System Constraints
+Design Overview
+Architecture
+Calculation Logic
+Validation and Testing
+User Interface Design
+Integration and Deployment
+Maintenance
+Current Calculator:
+Earlier Feedback
+
+Purpose
+
+The purpose of the Nx Calculator is to provide a fast, reliable, and user-friendly web application that assists in estimating the hardware and storage requirements for deploying a Video Management System (VMS) based on a given camera configuration. By inputting key parameters such as the number of cameras, resolution, frame rate, recording schedule, and retention period, users can quickly determine how many servers are needed, what type of storage capacity is required, and how the load should be distributed across systems. This tool is intended to support sales engineers, partners, system integrators, and customers in designing optimized, cost-effective VMS solutions tailored to their specific needs, while ensuring system performance and reliability within Network Optix’s guidelines.
+Goals
+Accurately Estimate Server Count
+Determine how many recording servers are required based on camera load, codec type, and performance benchmarks (e.g., max write throughput, decoding limits).
+
+
+Calculate Storage Requirements
+Compute total and per-server storage needs based on bitrate, retention period, RAID type, and recording mode (motion/object or continuous).
+
+
+Assess Network Bandwidth Load
+Estimate total upstream and per-server bandwidth consumption, considering camera bitrates and concurrent access for viewing or archiving.
+
+
+Validate Against Server Capacity Constraints
+Ensure that calculated system loads do not exceed known hardware limitations (e.g., CPU, RAM, disk I/O, NIC throughput).
+
+
+Recommend Server Specifications
+Provide hardware recommendations (CPU model, core count, RAM, storage type) for each server based on calculated load profiles.
+
+
+Support Custom Camera Configurations
+Allow users to define mixed-camera environments with varying resolutions, frame rates, and compression settings.
+
+
+Enable Rapid Scenario Modeling
+Let users quickly change input parameters to compare different design scenarios (e.g., higher retention, different codecs, NVR vs. hybrid architectures).
+
+
+Support High Availability Design
+Include logic to account for failover configurations, backup storage and RAID-level choices that impact usable storage.
+
+
+Deliver Exportable Reports
+Generate structured output (PDF) summarizing inputs, calculations, and recommendations for proposal or documentation use.
+
+
+Ensure Cross-Platform Accessibility
+Make the tool accessible as a Web Application
+
+
+Align with Nx Witness Best Practices
+Embed assumptions, constraints, and recommendations consistent with real-world Nx deployments and internal QA performance data.
+
+
+
+
+
+Audience
+The Nx VMS System Calculator is intended for technical and pre-sales professionals involved in designing, proposing, or validating Nx Witness surveillance deployments. Primary users include sales engineers and solution architects who need to quickly assess hardware requirements for customer projects; system integrators and resellers who plan, quote, and implement Nx-based systems; and technical support or QA personnel who verify configurations against best practices. Additionally, it serves as a self-service tool for enterprise IT teams and end customers seeking to estimate system needs during the planning phase. The calculator is designed for users with a foundational understanding of video surveillance concepts, including compression, storage planning, and server resource constraints.
+
+Functional Requirements
+Input Parameters
+The Nx VMS System Calculator requires a range of user-defined inputs that describe the planned surveillance deployment. These parameters are used to calculate server count, storage requirements, and network utilization. Each parameter is outlined below:
+Customization
+Type: Text and image
+Description: For OEM customization, and user input. If a user enters its company details, and logo, these are used instead of default Nx details and logo.
+Impact: Increasing usability and likability.
+Phase: 1
+Project Details
+Type: Text
+Description: Allow the user to provide the name of the project, the version of the calculator, etc.
+Phase: 1
+Number of Cameras
+Type: Integer
+Description: Total number of IP cameras in the system.
+Impact: Affects total throughput, storage, and server decoding load.
+Support: Allows grouping or mixed profiles (e.g., 100 × 2MP and 50 × 4K).
+Phase: 1
+Resolution per Camera
+Type: Dropdown / Preset or Custom (e.g., 1080p, 4K, 8MP)
+Description: Pixel resolution of each camera stream.
+Impact: Influences bitrate and storage usage. Higher resolution increases encoding and decoding requirements.
+Phase: 1
+Frame Rate (FPS)
+Type: Integer (1–100 fps)
+Description: Number of video frames captured per second.
+Impact: Affects bitrate and storage volume; higher FPS increases both.
+Phase: 1
+
+Compression Codec
+Type: Dropdown (H.264, H.265, MJPEG)
+Description: Video compression format used by the cameras.
+Impact: Determines efficiency of data encoding. H.265 offers better compression than H.264, while MJPEG is significantly less efficient.
+Phase: 1
+Bitrate per Stream (Predefined or Calculated)
+Type: Integer (Kbps or Mbps)
+Description: Bitrate per camera stream. Can be manually entered or calculated automatically from resolution, FPS, and codec.
+Impact: Used to estimate total bandwidth and storage consumption.
+Support: If Predefined, it is estimated from resolution, FPS, and Codec. If Calculated, these values are ignored, and Bitrate is considered for the hardware requirements and storage volume.
+Phase: 1
+Recording Schedule
+Type: Dropdown (Motion/Object-only, Continuous, Scheduled)
+Description: Defines when cameras are recording.
+Impact: Affects total recorded hours and therefore impacts storage calculations.
+Phase: 1
+Days of Retention
+Type: Integer (1+ days)
+Description: Number of days video data must be stored before being overwritten or deleted.
+Impact: A primary driver of total required storage.
+Phase: 1
+Audio Recording
+Type: Boolean (Yes/No)
+Description: Whether audio streams are also recorded.
+Impact: Slightly increases bitrate and storage requirements if enabled.
+Phase: 1
+
+Redundancy / RAID Level
+Type: Dropdown (None, RAID, Nx Failover)
+Description: Specifies fault-tolerance method used in storage arrays.
+Impact: Alters usable storage capacity. RAID 6, for example, consumes more raw storage than RAID 5 due to dual parity.
+Support: Type of RAID need to be determined.
+Phase: 1
+Server Redundancy / Failover Plan
+Type: Dropdown or Checkbox (N+1, N+2)
+Description: Indicates whether failover servers are used for high availability.
+Impact: Increases total server count or load distribution to accommodate standby capacity.
+Phase: 1
+Hours per Day of Recording (Optional)
+Type: Integer (1–24)
+Description: For motion recording or scheduled recording, defines how many hours per day video is expected to be saved.
+Impact: Fine-tunes storage estimates.
+Phase: 1
+Camera Group Profiles (Advanced)
+Type: Repeating Input Sets
+Description: Supports mixed environments with different configurations per camera group (e.g., warehouse cameras vs. lobby cameras).
+Impact: Enables more accurate modeling in complex installations.
+Phase: future
+Maximum Concurrent Viewing Streams (Optional)
+Type: Integer
+Description: Number of concurrent playback or live streams expected per desktop client.
+Impact: Each server supports up to 2,000 concurrent TCP connections. Since each Desktop Client uses 5 connections and each viewed camera adds 1, this limits how many clients and cameras a server can handle simultaneously.
+Phase: future
+
+Custom Text Fields
+Type: Text (Minimal formatting possible (headers, bold, italic, color, code, code-snippets)
+Description: Allow customer comments during the calculation, to explain decisions.
+Impact: Allows tailored calculations with custom comments, disclaimers, and considerations. Should be able to be inserted before/after each section.
+Phase: 1
+Output Values
+Total Storage Required
+Type: Float (GB, TB, PB)
+Description: Total amount of raw storage required to retain video for the desired retention period across all cameras.
+Includes: Bitrate, recording duration, codec efficiency, and recording schedule.
+Accounts for: Overhead from RAID configuration and filesystem loss.
+Phase: 1
+Total Storage per Server
+Type: Float (GB, TB, PB)
+Description: Storage capacity available per server after accounting for RAID parity and usable disk space.
+Used For: Sizing per-server disk arrays or NAS/SAN targets.
+Phase: 1
+Total Backup Storage per Server
+Type: Float (GB, TB, PB)
+Description: Backup Storage capacity available per server after accounting for RAID parity and usable disk space.
+Used For: Sizing per-server disk arrays or NAS/SAN targets.
+Phase: 1
+Number of Recording Servers
+Type: Integer (10 per Site max.)
+Description: Total number of servers required to handle the combined recording throughput and storage needs without exceeding performance thresholds.
+Considers: Write throughput, decoding performance, disk I/O, and TCP connection limits.
+Phase: 1
+
+Nx Professional Licenses or Nx Evos Services
+Type: Integer (Camera Licenses. I/O licenses/ etc. or to be replaced with Services)
+Description: Total number of Nx Witness Professional licenses or Nx Evos Services required for the deployment.
+Logic:
+One license/Service is required per device that is recorded.
+Live-only views (not recorded) require different licenses/Service.
+Phase: 1
+Recommended Server Specs
+Type: Text or Table
+Description: Suggested hardware specification per server.
+Includes:
+CPU model / core count
+RAM size
+Disk configuration (SSD/HDD, RAID level)
+Network interface capacity
+Basis: Derived from Nx internal benchmarks.
+Phase: 1
+Total Incoming Bitrate
+Type: Float (Mbps or Gbps)
+Description: Cumulative data rate of all camera streams being recorded.
+Use Case: Sizing NICs, switches, and ensuring server write bandwidth is sufficient.
+Phase: 1
+Estimated Per-Server Load
+Type: Table
+Description: Breakdown of load per server including:
+Recording throughput
+Stream count
+Storage used
+CPU/decoding headroom
+Use Case: Ensures balanced load across servers in distributed environments.
+Phase: 1
+Estimated Disk IOPS Requirements
+Type: Integer (IOPS)
+Description: The estimated number of disk IOPS required per server to support the incoming write load from recording cameras and the read load from playback/viewing clients.
+Calculation Basis:
+Write IOPS: Based on the number of concurrent camera streams, recording block size, and disk write behavior
+Read IOPS: Estimated based on the number of live and playback streams viewed concurrently per server.
+Use Case: Helps determine if the selected storage backend (e.g., HDD RAID, SSD, NAS) can meet the performance demands without dropping frames or causing latency during playback.
+Phase: future
+Number of Concurrent Desktop Clients Supported
+Type: Integer
+Description: Maximum number of simultaneously connected Desktop Clients per server based on TCP connection limits.
+Basis: 5 TCP connections per client and 1 per displayed camera tile.
+Phase: future
+Failover Server Recommendations (If Applicable)
+Type: Integer + Notes
+Description: Additional standby server count and placement recommendations for high availability scenarios (e.g., N+1, N+2).
+Use Case: Ensures continued recording in the event of hardware failure.
+Phase: 1
+Network Bandwidth Requirements
+Type: Mbps (per-server and total)
+Description:
+Ingress bandwidth: from cameras to servers
+Egress bandwidth: from servers to clients
+Use Case: Determines switch, router, and NIC sizing.
+Phase: 1
+Summary Report
+Type: Downloadable (PDF) and email
+Description: Consolidated report of all input parameters and computed outputs for use in proposals, documentation, or record-keeping.
+Considers: Email to Creator, Customers, and CC field ; default BCC to Sales / Hubspot
+Phase: 1
+
+
+
+
+More detailing required:
+Anything below, requires more detailing and will follow, but any input and comments are appreciated.
+
+System Constraints
+Max throughput per server
+Max number of streams per server
+Max number of servers per site
+Recommended specs (CPU/GPU/RAM/Disk types)
+Analytics?
+
+
+Deliverables applicable to the Hackathon
+Design Overview
+Architecture
+UX mockups or wireframes Calculation Logic
+Explain formulas or assumptions:
+Bitrate calculation: bitrate = resolution * frame_rate * compression_factor
+Storage estimation: storage = bitrate * days * 24 * 3600
+RAID type, and penalties
+Server load model: Based Nx benchmarks
+Include safety margins or buffer values
+Validation and Testing
+Define how the results will be verified (real-world deployments, QA lab data)
+Include unit tests or scenarios for validation
+Cross-check logic with Sales Engineering and Support
+User Interface Design
+Input UI (form, sliders, dropdowns)
+Result display (summary page, downloadable report, etc)
+Error handling (invalid inputs, limits exceeded)
+Integration and Deployment
+Hosting platform (Nx cloud, partner portal)
+Update mechanism for formula/data
+OEM customizations
+Maintenance
+Copyright / ownership transferred to Nx
+Customisable via CSS (style) and JSON (data), etc.
+
+Resources:
+Current Calculator:
+https://nx.networkoptix.com/calculator/
+https://gitlab.nxvms.dev/dev/system_calculator/-/tree/master/calculator
+Earlier Feedback
+Norman:
+
+Server recommendations based on the support article.
+Freely configurable numbers:
+So for quality not; low, medium, high, best, but a value in Mbps.
+For HDD capacity, the size and the read/write values in MB/s.
+Remove RAID, at least remove the fixed value.
+Resolution is irrelevant, since the bandwidth is the only thing that counts, but people like have it in the document, therefore it would be nice if people can add their own values.
+Remove the email address from the final report.
+Remove the Information section from the calculator and the report:
+
+Provide the option to add a custom logo, so an SI can use this as their ‘own’ documentation.
+Keep it updated, 2022 is already closeby.
+
+
+
+Build a webbased System Calculator that can do the following:
+
+First step:
+
+Enter the following information:
+
+Project Name
+Date (if nothing filled in, use date of creation)
+Created by:
+Email address of the creator
+Email address of the receiver (optional field)
+Project Description (optional field)
+Upload logo (jpg or png) If no logo is uploaded, the default logo is used (NxLogo.jpg)
+
+Second Step:
+
+Create the first Site of the Project
+Enter the total number of devices per site (max 2560 devices)
+Select the percentage of failover. If 100%, you can add max 1280 devices, divided over max 10 servers per site. If 0%, they will divide over max 10 servers per site. Keep in mind that, the max is always 256 devices per server.
+Enter per device type the resolution, frame rate, codec, quality, Record Mode, Recorded Streams, Motion %, Object %, Days to Record, and the number of device of his type, and calculated the expected bitrate for this device type in total.
+Provide the option to make a new entry, to add another device type, with all aforementioned variables
+Below the entered devices, a line should display the number of devices, the total expected bitrate, and the required storage
+Once all device types have been entered, we move to the third step, if no device types were entered, you can't go to the third step and notification should appear with something like: Please add devices first
+
+Third Step:
+
+If the max number of devices were exceeded for the first site, offer to create another site, until one select the option to move to the fourth step.
+
+fourth step:
+
+A Server can hold up to 256 devices, so calculate the total number of servers based on the devices of the input in the second step while considering failover. Select the number of NICs per server, and the capacity per NIC (1 Gbit, 10 Gbit).
+If total amount of the expected bitrate +20%, exceeds the capacity of the NICs per server, user should reduce the setting per device or reduce the number of devices first, before he can proceed.
+
+Fifth step:
+
+Display the report in html format and offer the option to send the report in PDF format and bcc the email to sales@networkoptix.com
+
+Additional information:
+
+Variable will be listed in js files, please provide examples:
+
+For the device settings, the following applies:
+
+
+"a_16mp": {
+            	"name": "16mp",
+            	"area": 16000000,
+            	"label": "16mp (4616×3464)"
+        	},
+        	"a1_12mp": {
+            	"name": "12mp",
+            	"area": 12000000,
+            	"label": "12mp (4000×3000)"
+        	},
+        	"b_10mp": {
+            	"name": "10mp",
+            	"area": 10000000,
+            	"label": "10mp (3648×2736)"
+        	},
+        	"c_8mp": {
+            	"name": "8mp",
+            	"area": 8000000,
+            	"label": "8mp (3264×2448)"
+        	},
+        	"d_5mp": {
+            	"name": "5mp",
+            	"area": 5000000,
+            	"label": "5mp (2592×1944)"
+        	},
+        	"d_4mp": {
+            	"name": "4mp",
+            	"area": 4000000,
+            	"label": "4mp (2688x1520)"
+        	},
+        	"e_3mp": {
+            	"name": "3mp",
+            	"area": 3145728,
+            	"label": "3mp (2048×1536)"
+        	},
+        	"f_2mp": {
+            	"name": "2mp",
+            	"area": 1920000,
+            	"label": "2mp (1600×1200)"
+        	},
+        	"g_1024": {
+            	"name": "0.7mp",
+            	"area": 786432,
+            	"label": "0.7mp (1024×768)"
+        	},
+        	"h_svga": {
+            	"name": "svga",
+            	"area": 480000,
+            	"label": "SVGA (800×600)"
+        	},
+        	"i_vga": {
+            	"name": "vga",
+            	"area": 307200,
+            	"label": "VGA (640×480)"
+        	}
+
+
+
+
+more info:
+
+1) Objectives and POC Scope
+ Decide: single-sentence goal; definition of “functional POC”; minimum deliverables (README, demo, list of libs).
+Goals:
+Give people other things to work on and space every week and foster a culture of developing something they are passionate about or at least different from their day jobs..
+Foster new tool usage.
+Create a prototype calculator.
+The Nx Calculator is a web application designed to quickly estimate hardware and storage for VMS deployments. Users input camera parameters to determine server count, storage capacity, and load distribution, helping sales engineers, partners, SIs, and customers design optimized, cost-effective VMS solutions per Network Optix guidelines.
+Full draft PRD:
+
+Nx System Calculator Hackathon – Scope Document
+Next: Split PRD into multiple phases
+2) Success Criteria
+ Decide: measurable KPIs (accuracy vs golden tests, benchmark coverage, SE pilot readiness, adoption target).
+Does it run?  Working product that can be deployed.
+Functionality- what percentage of the PRD does it cover?  Core stories work, few defects.
+Accuracy & Technical quality:
+Compare against “Golden tests”  offer up the original function from the source code.  Current System Calculator.   Successful functions should be easily modified without changing the source code (perhaps from a configuration file).
+Usability :
+Inputs are validated
+Mostly clear- small amount of friction.
+Errors handled gracefully
+Output is clear PDF report
+Back-end API for access to collected data from other systems. (JSON output)
+Bonus: reactive design.
+Innovation
+High-impact (scenario comparisons, data visualization)
+Thinking outside the box: one brilliant idea implemented (not from the PRD).
+Completeness
+Repo quality : README + setup guide.  Demo video.  System requirements.
+Are the judges able to reproduce it?
+Disqualifiers?
+Plagiarism - copy/paste of other products.
+Use of sensitive data -  hard coded secrets, customer data, etc.
+3) MVP Feature Set
+ Decide: what’s in (calc engine, JSON I/O, UI, PDF/email, white-label basics, failover logic, mixed profiles) and what’s out for hackathon.  Norman Graafsma will split the PRD.
+4) Architecture and Interfaces
+ Decide: engine ↔ UI split; canonical JSON input/output contracts; plug-in points (bitrate estimator, storage/RAID, IOPS, NIC rules).
+Modern, popular, common web languages (js, not BASIC or PASCAL)
+API interface for data - queriable in a number of different ways.
+Output format in JSON (loose schema)
+
+5) Calculation Policies and Headroom
+ Decide: default buffers (CPU/decode, storage overhead, NIC overhead, IOPS ≤70% target); device/server caps and warning thresholds.
+	No need to define this at the moment.
+6) Blockers and Assumptions (256 devices/server, higher-MP/4K mix)
+ Decide: interim caps per server for high-bandwidth profiles; approach to mixed camera groups; storage slot constraints guidance.
+	No need to decide this at the moment in phase I.
+7) Benchmark and Validation Plan
+ Decide: test matrix (resolutions, fps, codecs, motion vs continuous); golden vectors; QA lab time allocation; pass/fail gates.
+	Defined in the PRD.
+	Make reasonable assumptions and Product team and QA decide the parameters that define the inputs to the variables that the calculation function uses.
+8) UX and Reporting
+ Decide: required inputs and output views; PDF template and email/BCC behavior; SI logo/white-label options and defaults.
+Reactive design:  should be able to run on PC and mobile devices. (optional)
+PDF template- be detailed and creative. Should look very professional and detailed enough for a proposal.
+Require: email address, company name, contact name, - enforce proper email address (pdf report emailed to correct email address).
+Disclaimer- Sales may contact you. Opt out?
+Reports as pdfs are sent to a company bcc (configurable)
+Webhook, etc:  modern data communication interfaces / apis.
+9) Guardrails and Compliance
+ Decide: data use (synthetic only), legal disclaimer text, OSS/license scan requirements, allowed tooling, provenance notes.
+10) Team Structure and Timeline
+ Decide: schedule (e.g., 2-week build + demo day or 48-hour sprint), team size/mix, mid-point review, code freeze timing.
+	Are single-person teams allowed?
+	When is kickoff?
+	When is code freeze?
+	When is judging complete?
+11) Repos, CI, and Quality Bar
+ Decide: repo layout, PR template, lint/unit tests required, demo packaging, version tag for judging.
+
+12) Judging and Demo Day
+ Decide: rubric weights; judge panel; demo format and time; tie-breaker rules.
+Pre-hack-  4 weeks heads up- here is the current calculator, new PRD (phase I).  Judgement criteria  (internal page).  Promoted by exec leadership.
+13) Budget and Logistics
+ Decide: prize amounts (1st/2nd/3rd), total budget cap, category caps (food, swag, cloud, lab gear, video), purchasing owners.
+Nathan: What is the prize structure?
+14) Ownership and RACI
+ Decide: accountable owner per workstream (Product, Eng, QA/Perf, SE, Legal, IT/Sec, Marketing); single DRI post-hack.
+	Figure out who is taking ownership after the hack.  (If possible)
+Take the position of hackathon  = prototype and no one takes ownership.
+15) Risks and Mitigations
+ Decide: top 3–5 risks (over-scope, insufficient benchmarks, lab contention, accuracy claims) and named mitigations.
+16) Post-Hack Path to Production
+ Decide: 4-week hardening plan, beta timeline for SEs, criteria to replace legacy calculator, maintenance ownership.
+
+Current Blockers
+The significant increase in the maximum number of supported devices from 128 to 256 per server requires a thorough re-evaluation of our current hardware requirements. Previously, in deployments exceeding the 128-device threshold, we had to reduce the number of devices per server to approximately 100 to maintain optimal performance and stability. This raises questions about our scalability assumptions in the new 256-devices-per-server specification.
+
+Also, it is now unclear whether a configuration of 10 servers will support a total of 2560 devices (10 servers * 256 devices/server) or if the practical limitation, similar to the previous scenario, will result in a lower actual capacity, potentially closer to 2000 devices (10 servers * 200 devices/server, assuming a similar percentage reduction).
+
+This uncertainty emphasizes the urgency of conducting decent testing and analysis to determine the true hardware specifications required to confidently support the expanded device count without compromising system performance or user experience.
+
+The calculation of these numbers must also account for the increasing prevalence of higher bandwidth devices in the market. Our current assumptions are primarily based on 1080p resolution devices, but our user base has moved towards 3 and 4 Megapixel (MP) devices. Furthermore, 4K resolution devices are becoming increasingly common, requiring a revision of our bandwidth considerations to accurately reflect current and future market trends.
+
+There are two possible approaches: either calculate more powerful hardware for devices with higher bandwidth consumption, or reduce the number of devices per server when high-bandwidth devices are in use. The latter option seems more logical, especially when considering local storage, due to the limited number of HDD slots available per server. Finally, continuously increasing hardware capacity may make proper testing difficult.
+
+
+
+
+Wendy:
+
+Add IOPS suggestion - We usually meet the customer using NAS and only consider storage capacity only in the APAC region. Customers might claim “I have already followed the suggestion under the calculator”
+If we suggest customers stay on the 70% IOPS utilization, could we provide the efficient suggested value of IOPS?
+Could we consider more consideration about IOPS suggestion (If customer needs to backup storage,
+Jira:
+https://networkoptix.atlassian.net/browse/FDBK-369
+https://networkoptix.atlassian.net/browse/FDBK-370
+https://networkoptix.atlassian.net/browse/FDBK-371
+https://networkoptix.atlassian.net/browse/FDBK-380
+https://networkoptix.atlassian.net/browse/FDBK-383
+https://networkoptix.atlassian.net/browse/FDBK-434
+
+
+
+
