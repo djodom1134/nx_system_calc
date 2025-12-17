@@ -4,7 +4,6 @@
 
 import { useCalculatorStore } from '../stores/calculatorStore'
 import { useState } from 'react'
-import { apiClient } from '../services/api'
 
 export default function Results() {
   const { results, project, cameraGroups, retentionDays, serverConfig } = useCalculatorStore()

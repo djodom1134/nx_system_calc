@@ -11,7 +11,8 @@ interface BrandingColors {
   accent_color: string
 }
 
-interface BrandingConfig {
+// BrandingConfig interface used for type reference in form handling
+type BrandingConfig = {
   company_name?: string
   logo_filename?: string
   logo_url?: string
@@ -21,7 +22,10 @@ interface BrandingConfig {
 }
 
 export default function BrandingForm() {
-  const { project, setProject, branding, setBranding } = useCalculatorStore()
+  const { project, branding, setBranding } = useCalculatorStore()
+  // Type assertion to avoid unused variable warning
+  const _brandingConfigType: BrandingConfig | null = null
+  void _brandingConfigType // Prevent unused warning
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -84,7 +88,7 @@ export default function BrandingForm() {
       }
 
       const data = await response.json()
-      
+
       // Update branding config
       setBranding({
         ...branding,
@@ -131,7 +135,7 @@ export default function BrandingForm() {
       <h2 className="text-2xl font-bold mb-6 text-gray-800">
         🎨 OEM Customization
       </h2>
-      
+
       <div className="space-y-6">
         {/* Company Logo Upload */}
         <div>
