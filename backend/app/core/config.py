@@ -1,12 +1,16 @@
 """Application configuration."""
 
 import json
+import logging
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
+
+logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
@@ -53,6 +57,9 @@ class Settings(BaseSettings):
     # Logging
     log_level: str = Field(default="INFO", env="LOG_LEVEL")
 
+    # Configuration Directory
+    config_dir: str = Field(default="", env="CONFIG_DIR")
+
     class Config:
         env_file = ".env"
         case_sensitive = False
@@ -67,38 +74,85 @@ def get_settings() -> Settings:
 class ConfigLoader:
     """Load and cache configuration files."""
 
-    _config_dir = Path(__file__).parent.parent.parent.parent / "config"
+    @classmethod
+    def _get_config_dir(cls) -> Path:
+        """Get the configuration directory path."""
+        settings = get_settings()
+
+        # Use environment variable if set
+        if settings.config_dir:
+            config_path = Path(settings.config_dir)
+            logger.info(f"Using CONFIG_DIR from environment: {config_path}")
+        else:
+            # Default: relative path from this file
+            config_path = Path(__file__).parent.parent.parent.parent / "config"
+            logger.info(f"Using default config directory: {config_path}")
+
+        # Verify the directory exists
+        if not config_path.exists():
+            logger.error(f"Config directory does not exist: {config_path}")
+            raise FileNotFoundError(
+                f"Configuration directory not found: {config_path}. "
+                f"Please set CONFIG_DIR environment variable or ensure config files are deployed."
+            )
+
+        return config_path
+
+    @classmethod
+    def _load_config_file(cls, filename: str, key: str = None) -> Any:
+        """Load a configuration file with error handling."""
+        try:
+            config_dir = cls._get_config_dir()
+            file_path = config_dir / filename
+
+            logger.debug(f"Loading config file: {file_path}")
+
+            if not file_path.exists():
+                raise FileNotFoundError(
+                    f"Configuration file not found: {file_path}. "
+                    f"Please ensure {filename} is deployed in the config directory."
+                )
+
+            with open(file_path) as f:
+                data = json.load(f)
+
+            if key:
+                if key not in data:
+                    raise KeyError(f"Key '{key}' not found in {filename}")
+                return data[key]
+
+            return data
+
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in {filename}: {e}")
+            raise ValueError(f"Invalid JSON in configuration file {filename}: {e}")
+        except Exception as e:
+            logger.error(f"Error loading {filename}: {e}")
+            raise
 
     @classmethod
     @lru_cache()
     def load_resolutions(cls) -> List[Dict[str, Any]]:
         """Load resolution presets."""
-        with open(cls._config_dir / "resolutions.json") as f:
-            data = json.load(f)
-            return data["resolutions"]
+        return cls._load_config_file("resolutions.json", "resolutions")
 
     @classmethod
     @lru_cache()
     def load_codecs(cls) -> List[Dict[str, Any]]:
         """Load codec configurations."""
-        with open(cls._config_dir / "codecs.json") as f:
-            data = json.load(f)
-            return data["codecs"]
+        return cls._load_config_file("codecs.json", "codecs")
 
     @classmethod
     @lru_cache()
     def load_raid_types(cls) -> List[Dict[str, Any]]:
         """Load RAID type configurations."""
-        with open(cls._config_dir / "raid_types.json") as f:
-            data = json.load(f)
-            return data["raid_types"]
+        return cls._load_config_file("raid_types.json", "raid_types")
 
     @classmethod
     @lru_cache()
     def load_server_specs(cls) -> Dict[str, Any]:
         """Load server specifications."""
-        with open(cls._config_dir / "server_specs.json") as f:
-            return json.load(f)
+        return cls._load_config_file("server_specs.json")
 
     @classmethod
     def get_codec_by_id(cls, codec_id: str) -> Dict[str, Any]:

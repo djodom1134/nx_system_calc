@@ -83,6 +83,18 @@
       "write_performance": "1x",
       "recommended": true,
       "notes": "Nx-specific failover - storage replicated to backup server"
+    },
+    {
+      "id": "veracity",
+      "name": "Veracity",
+      "description": "Verocity round-robin configuration",
+      "usable_percentage": 10,
+      "min_drives": 3,
+      "fault_tolerance": 7,
+      "read_performance": "1x",
+      "write_performance": "1x",
+      "recommended": true,
+      "notes": "Nx-specific failover - storage replicated to backup server"
     }
   ],
   "filesystem_overhead": {
