@@ -4,83 +4,178 @@
 
 ### ✅ **Pre-Deployment Requirements**
 
-1. **Python 3.9+** installed
-2. **Node.js 18+** and npm installed
-3. **Config files** deployed to server
-4. **Environment variables** configured
-5. **Dependencies** installed
+1. **Docker & Docker Compose** installed (for Docker deployment)
+2. **Python 3.9+** installed (for manual deployment)
+3. **Node.js 18+** and npm installed (for manual deployment)
+4. **Config files** deployed to server
+5. **Environment variables** configured
+
+---
+
+## 🐳 **Docker Deployment (Recommended)**
+
+### **Quick Start**
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-org/nx_system_calc.git
+cd nx_system_calc
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env with your production settings
+
+# 3. Deploy using the deployment script
+chmod +x scripts/deploy-aws.sh
+./scripts/deploy-aws.sh deploy
+```
+
+### **Manual Docker Deployment**
+
+```bash
+# Development mode
+docker-compose up -d
+
+# Production mode (recommended for AWS)
+docker-compose -f docker-compose.prod.yml up -d
+
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Stop services
+docker-compose -f docker-compose.prod.yml down
+```
+
+### **Docker Files Overview**
+
+| File | Purpose |
+|------|---------|
+| `docker-compose.yml` | Development configuration |
+| `docker-compose.prod.yml` | Production configuration (AWS/cloud) |
+| `backend/Dockerfile` | Backend container image |
+| `frontend/Dockerfile` | Frontend container with nginx |
+| `frontend/nginx.conf` | Nginx configuration for SPA + API proxy |
+
+### **Production Environment Variables**
+
+Create a `.env` file in the project root:
+
+```bash
+# REQUIRED - Change these!
+SECRET_KEY=your-secure-random-key-minimum-32-chars
+DB_PASSWORD=your-secure-database-password
+
+# CORS - Add your production domain
+CORS_ORIGINS=["https://yourdomain.com"]
+
+# Optional - Email Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+SMTP_FROM=noreply@yourdomain.com
+
+# Optional - Features
+ENABLE_WEBHOOKS=false
+LOG_LEVEL=INFO
+```
+
+---
+
+## ☁️ **AWS Deployment Options**
+
+### **Option 1: AWS EC2 with Docker Compose**
+
+1. **Launch EC2 Instance**
+   - Amazon Linux 2 or Ubuntu 22.04
+   - t3.medium or larger recommended
+   - Security Group: Allow ports 22, 80, 443
+
+2. **Install Docker**
+   ```bash
+   # Amazon Linux 2
+   sudo yum update -y
+   sudo amazon-linux-extras install docker -y
+   sudo systemctl start docker
+   sudo usermod -aG docker ec2-user
+
+   # Install Docker Compose
+   sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
+
+3. **Deploy Application**
+   ```bash
+   git clone https://github.com/your-org/nx_system_calc.git
+   cd nx_system_calc
+   cp .env.example .env
+   # Edit .env with production values
+   ./scripts/deploy-aws.sh deploy
+   ```
+
+### **Option 2: AWS ECS with Fargate**
+
+1. **Push images to ECR**
+   ```bash
+   # Authenticate with ECR
+   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
+
+   # Build and push backend
+   docker build -t nx-calculator-backend ./backend
+   docker tag nx-calculator-backend:latest YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/nx-calculator-backend:latest
+   docker push YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/nx-calculator-backend:latest
+
+   # Build and push frontend
+   docker build -t nx-calculator-frontend ./frontend
+   docker tag nx-calculator-frontend:latest YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/nx-calculator-frontend:latest
+   docker push YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/nx-calculator-frontend:latest
+   ```
+
+2. **Create ECS Task Definition** with environment variables
+3. **Create ECS Service** with Application Load Balancer
+4. **Configure RDS PostgreSQL** for database
+
+### **Option 3: AWS Elastic Beanstalk**
+
+```bash
+# Install EB CLI
+pip install awsebcli
+
+# Initialize
+eb init -p docker nx-calculator
+
+# Create environment
+eb create nx-calculator-prod
+
+# Deploy
+eb deploy
+```
 
 ---
 
 ## 📁 **Required Files & Directories**
 
-### **Backend Files**
 ```
-backend/
-├── app/
-│   ├── api/
-│   ├── core/
-│   ├── models/
-│   ├── schemas/
-│   ├── services/
-│   └── main.py
-└── requirements.txt
-
-config/                    ⚠️ CRITICAL - Must be deployed!
-├── resolutions.json
-├── codecs.json
-├── raid_types.json
-└── server_specs.json
-```
-
-### **Frontend Files**
-```
-frontend/
-├── src/
-├── public/
-│   ├── logo.webp        ⚠️ Required for branding
-│   └── tile.png         ⚠️ Required for header background
-├── package.json
-└── vite.config.ts
-```
-
----
-
-## 🔧 **Environment Variables**
-
-Create a `.env` file in the `backend/` directory:
-
-```bash
-# API Settings
-API_HOST=0.0.0.0
-API_PORT=8000
-API_RELOAD=false  # Set to false in production
-
-# Security
-SECRET_KEY=your-secure-random-key-here-change-this
-
-# Database
-DATABASE_URL=sqlite:///./nx_calculator.db
-# Or for PostgreSQL:
-# DATABASE_URL=postgresql://user:password@localhost/nx_calculator
-
-# CORS - Add your production domain
-CORS_ORIGINS=["https://yourdomain.com","http://localhost:5173"]
-
-# Email (Optional)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASSWORD=your-app-password
-SMTP_FROM=noreply@networkoptix.com
-SMTP_BCC=sales@networkoptix.com
-
-# Webhooks (Optional)
-ENABLE_WEBHOOKS=false
-
-# Configuration Directory (IMPORTANT for deployment)
-CONFIG_DIR=/path/to/config
-# If not set, will use relative path: ../config from backend/app/core/
+nx_system_calc/
+├── backend/
+│   ├── app/
+│   ├── Dockerfile
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   │   ├── logo.webp      ⚠️ Required for branding
+│   │   └── tile.png       ⚠️ Required for header
+│   ├── Dockerfile
+│   └── nginx.conf
+├── config/                 ⚠️ CRITICAL - Must be deployed!
+│   ├── resolutions.json
+│   ├── codecs.json
+│   ├── raid_types.json
+│   └── server_specs.json
+├── docker-compose.yml
+├── docker-compose.prod.yml
+└── .env
 ```
 
 ---
@@ -92,157 +187,79 @@ CONFIG_DIR=/path/to/config
 **Symptoms:**
 ```
 GET /api/v1/config/raid-types - 500 (Internal Server Error)
-GET /api/v1/config/codecs - 500 (Internal Server Error)
-GET /api/v1/config/resolutions - 500 (Internal Server Error)
 ```
-
-**Cause:** Config directory not found or not in expected location
 
 **Solutions:**
 
-1. **Set CONFIG_DIR environment variable:**
-   ```bash
-   export CONFIG_DIR=/absolute/path/to/config
+1. **For Docker:** Ensure config volume is mounted correctly
+   ```yaml
+   volumes:
+     - ./config:/app/config:ro
    ```
 
-2. **Verify config files exist:**
+2. **Set CONFIG_DIR environment variable:**
    ```bash
-   ls -la /path/to/config/
-   # Should show: resolutions.json, codecs.json, raid_types.json, server_specs.json
+   CONFIG_DIR=/app/config  # For Docker
+   CONFIG_DIR=/path/to/config  # For manual deployment
    ```
 
-3. **Check file permissions:**
-   ```bash
-   chmod 644 /path/to/config/*.json
-   ```
-
-4. **Verify JSON syntax:**
+3. **Verify JSON syntax:**
    ```bash
    python3 -m json.tool config/raid_types.json
    ```
 
 ### **Issue 2: CORS Errors**
 
-**Symptoms:**
-```
-Access to fetch at 'http://api.example.com' from origin 'http://frontend.example.com' 
-has been blocked by CORS policy
-```
-
-**Solution:**
-Add your frontend domain to `CORS_ORIGINS` in `.env`:
+**Solution:** Add your domain to CORS_ORIGINS:
 ```bash
-CORS_ORIGINS=["https://frontend.example.com","http://localhost:5173"]
+CORS_ORIGINS=["https://yourdomain.com","http://localhost"]
 ```
 
 ### **Issue 3: Database Connection Errors**
 
-**Solution:**
-Ensure `DATABASE_URL` is correctly set and database is accessible:
+**Solution:** For Docker, use the service name:
 ```bash
-# For SQLite (default)
-DATABASE_URL=sqlite:///./nx_calculator.db
-
-# For PostgreSQL
-DATABASE_URL=postgresql://user:password@localhost:5432/nx_calculator
+DATABASE_URL=postgresql://nx_user:password@db:5432/nx_calculator
 ```
 
----
+### **Issue 4: Frontend Can't Reach Backend**
 
-## 📦 **Deployment Steps**
-
-### **Option 1: Docker Deployment (Recommended)**
-
-Coming soon - Docker configuration will be added.
-
-### **Option 2: Manual Deployment**
-
-#### **Backend Deployment**
-
-```bash
-# 1. Navigate to backend directory
-cd backend
-
-# 2. Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Set environment variables
-export CONFIG_DIR=/absolute/path/to/config
-export DATABASE_URL=sqlite:///./nx_calculator.db
-# ... other variables
-
-# 5. Initialize database
-python3 -c "from app.models.base import init_db; init_db()"
-
-# 6. Start server
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-
-#### **Frontend Deployment**
-
-```bash
-# 1. Navigate to frontend directory
-cd frontend
-
-# 2. Install dependencies
-npm install
-
-# 3. Build for production
-npm run build
-
-# 4. Serve with nginx or other web server
-# The build output will be in frontend/dist/
-```
+**Solution:** The nginx.conf proxies `/api/` to the backend. Ensure:
+- Backend container is named `backend` (or update nginx.conf)
+- Both containers are on the same Docker network
 
 ---
 
 ## 🔍 **Verification Steps**
 
-After deployment, verify everything works:
-
 ```bash
-# 1. Check backend health
-curl http://localhost:8000/docs
+# Using the deployment script
+./scripts/deploy-aws.sh verify
 
-# 2. Test config endpoints
-curl http://localhost:8000/api/v1/config/raid-types
-curl http://localhost:8000/api/v1/config/codecs
-curl http://localhost:8000/api/v1/config/resolutions
-
-# 3. Test calculation endpoint
-curl -X POST http://localhost:8000/api/v1/calculate \
-  -H "Content-Type: application/json" \
-  -d @test_calculation.json
+# Manual verification
+curl http://localhost/health           # Frontend
+curl http://localhost:8000/health      # Backend
+curl http://localhost:8000/api/v1/config/raid-types  # Config
 ```
 
 ---
 
 ## 📝 **Production Recommendations**
 
-1. **Use PostgreSQL** instead of SQLite for production
-2. **Set API_RELOAD=false** in production
-3. **Use a reverse proxy** (nginx, Apache) in front of the API
-4. **Enable HTTPS** with SSL certificates
-5. **Set up monitoring** and logging
-6. **Configure backups** for the database
-7. **Use environment-specific .env files**
-8. **Never commit .env files** to version control
+1. ✅ **Use PostgreSQL** - Configured by default in docker-compose.prod.yml
+2. ✅ **Use HTTPS** - Add SSL certificates to nginx or use AWS ALB
+3. ✅ **Set strong secrets** - SECRET_KEY and DB_PASSWORD
+4. ✅ **Enable health checks** - Already configured in Docker
+5. ✅ **Configure logging** - Set LOG_LEVEL=INFO or DEBUG
+6. ✅ **Set up backups** - Use AWS RDS automated backups
+7. ✅ **Monitor resources** - Use AWS CloudWatch
 
 ---
 
 ## 🆘 **Getting Help**
 
-If you encounter issues:
-
-1. Check backend logs for detailed error messages
-2. Verify all config files are present and valid JSON
-3. Ensure CONFIG_DIR environment variable is set correctly
-4. Check file permissions
-5. Verify Python and Node.js versions
-
-For more help, contact the development team.
+1. Run deployment verification: `./scripts/deploy-aws.sh verify`
+2. Check container logs: `docker-compose logs backend`
+3. Run config test: `cd backend && python3 test_deployment.py`
+4. Verify JSON files: `python3 -m json.tool config/*.json`
 

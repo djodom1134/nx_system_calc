@@ -1,3 +1,6 @@
+# Production Docker Compose for AWS/Cloud Deployment
+# Usage: docker-compose -f docker-compose.prod.yml up -d
+
 version: '3.8'
 
 services:
@@ -6,18 +9,24 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: nx-calculator-backend
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     environment:
-      - DATABASE_URL=postgresql://nx_user:nx_password@db:5432/nx_calculator
+      - DATABASE_URL=postgresql://nx_user:${DB_PASSWORD}@db:5432/nx_calculator
       - API_HOST=0.0.0.0
       - API_PORT=8000
       - API_RELOAD=false
       - CONFIG_DIR=/app/config
-      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
-      - CORS_ORIGINS=["http://localhost","http://localhost:80","http://localhost:5173"]
-      - LOG_LEVEL=INFO
+      - SECRET_KEY=${SECRET_KEY}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["https://yourdomain.com"]}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - ENABLE_WEBHOOKS=${ENABLE_WEBHOOKS:-false}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM=${SMTP_FROM:-noreply@networkoptix.com}
+      - SMTP_BCC=${SMTP_BCC:-}
     volumes:
       - ./config:/app/config:ro
       - uploads_data:/app/uploads
@@ -25,7 +34,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    restart: unless-stopped
+    restart: always
     networks:
       - nx-network
     healthcheck:
@@ -33,7 +42,15 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
   frontend:
     build:
@@ -42,10 +59,11 @@ services:
     container_name: nx-calculator-frontend
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       backend:
         condition: service_healthy
-    restart: unless-stopped
+    restart: always
     networks:
       - nx-network
     healthcheck:
@@ -54,19 +72,26 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
   db:
     image: postgres:15-alpine
     container_name: nx-calculator-db
     environment:
       - POSTGRES_USER=nx_user
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-nx_password}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=nx_calculator
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
+    # Don't expose port in production - only internal access
+    restart: always
     networks:
       - nx-network
     healthcheck:
@@ -75,11 +100,22 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
 volumes:
   postgres_data:
+    driver: local
   uploads_data:
+    driver: local
   reports_data:
+    driver: local
 
 networks:
   nx-network:
